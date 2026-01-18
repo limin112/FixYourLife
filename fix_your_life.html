@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="minli_avatar.png">
+    <title>MinLiBuilds | The Protocol</title>
+    <style>
+        :root {
+            --bg: #111;
+            --text: #eee;
+            --accent: #3b82f6;
+            --card-bg: #1a1a1a;
+            --border: #333;
+            --font-main: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: var(--font-main);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            line-height: 1.6;
+            transition: background 0.3s;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            padding: 1.5rem;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            margin-bottom: 1rem;
+        }
+
+        .lang-switch {
+            align-self: flex-end;
+            background: #222;
+            border: 1px solid var(--border);
+            color: #ccc;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+            margin-bottom: 0.5rem;
+        }
+
+        .lang-switch:hover {
+            background: #333;
+            color: white;
+        }
+
+        h1,
+        h2,
+        h3 {
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 0.3rem;
+            margin-top: 0;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 1.4rem;
+            margin-top: 0;
+            color: var(--accent);
+        }
+
+        .subtitle {
+            color: #888;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        }
+
+        .step-container {
+            display: none;
+            margin-bottom: auto;
+        }
+
+        .step-container.active {
+            display: block;
+            animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #ccc;
+            font-size: 1rem;
+        }
+
+        .question-desc {
+            font-size: 0.9rem;
+            color: #777;
+            margin-bottom: 0.8rem;
+            margin-top: -0.2rem;
+            line-height: 1.5;
+        }
+
+        textarea,
+        input[type="text"] {
+            width: 100%;
+            background: #222;
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 0.8rem;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-family: inherit;
+            resize: vertical;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+
+        textarea:focus,
+        input:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: #262626;
+        }
+
+        .btn-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            gap: 1rem;
+        }
+
+        button {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            flex: 1;
+        }
+
+        button.secondary {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: #888;
+        }
+
+        button.secondary:hover {
+            border-color: #555;
+            color: #ccc;
+        }
+
+        button:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: #222;
+            margin-bottom: 1.5rem;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--accent);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .stat-box {
+            background: #222;
+            padding: 1.2rem;
+            border-radius: 8px;
+            border-left: 3px solid var(--accent);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #666;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .stat-value {
+            font-size: 1rem;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            line-height: 1.5;
+        }
+
+        .quote {
+            font-style: italic;
+            color: #666;
+            border-left: 2px solid #333;
+            padding-left: 1rem;
+            margin: 1.5rem 0;
+            font-size: 0.95rem;
+        }
+
+        .export-actions {
+            margin-top: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .time-block {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: #222;
+            border-radius: 6px;
+            border: 1px solid #2a2a2a;
+        }
+
+        /* Profile Card Styles */
+        .profile-card {
+            margin-top: auto;
+            border-top: 1px solid #222;
+            padding-top: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .profile-card img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+        }
+
+        .profile-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .profile-name {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: white;
+        }
+
+        .profile-link {
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-top: 0.2rem;
+        }
+
+        .profile-link:hover {
+            text-decoration: underline;
+        }
+
+        .profile-cta {
+            font-size: 0.8rem;
+            color: #888;
+            margin-top: 0.2rem;
+        }
+
+        @media (min-width: 600px) {
+            .container {
+                padding: 2rem;
+            }
+
+            .card {
+                padding: 2rem;
+            }
+
+            .export-actions {
+                flex-direction: row;
+            }
+
+            h1 {
+                font-size: 2.2rem;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .full-width {
+                grid-column: 1 / -1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <header>
+            <button class="lang-switch" onclick="toggleLanguage()">English / 中文</button>
+            <h1 data-i18n="main_title">The Protocol</h1>
+            <div class="subtitle" data-i18n="main_subtitle">How to fix your entire life in 1 day</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress"></div>
+            </div>
+        </header>
+
+        <div id="app">
+            <!-- Introduction -->
+            <div class="step-container active" data-step="0">
+                <div class="card">
+                    <h2 data-i18n="welcome_title">Welcome</h2>
+                    <p style="margin-top: -1rem; margin-bottom: 1.5rem; font-size: 0.9rem;">
+                        <a href="https://x.com/thedankoe/status/2010751592346030461" target="_blank"
+                            style="color: #666; text-decoration: underline;" data-i18n="source_link">Original Protocol
+                            by Dan Koe</a>
+                    </p>
+                    <p data-i18n="welcome_p1">This tool guides you through to reset your life. It is designed to be done
+                        over the course of <strong>one full day</strong>.</p>
+                    <div class="quote" data-i18n="welcome_quote">"You aren’t where you want to be because you aren’t the
+                        person who would be there."</div>
+                    <p style="font-size: 0.9rem; color: #666; margin-top: 1rem;" data-i18n="welcome_note">🔒 Privacy: No
+                        data is sent to any server. Everything is stored locally in your browser.</p>
+                    <div class="btn-group" style="justify-content: flex-end;">
+                        <button onclick="nextStep()" data-i18n="btn_start">Start Protocol</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MORNING: The Excavation -->
+            <div class="step-container" data-step="1">
+                <div class="card">
+                    <h2 data-i18n="part1_title">Part 1: The Excavation</h2>
+                    <p data-i18n="part1_intro">We must create a new frame for your mind. Answer truthfully.</p>
+
+                    <div class="form-group">
+                        <label data-i18n="label_dissatisfaction">Persistent Dissatisfaction</label>
+                        <div class="question-desc" data-i18n="desc_dissatisfaction">What is the dull dissatisfaction
+                            you’ve learned to tolerate?</div>
+                        <textarea rows="3" data-save="dissatisfaction"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label data-i18n="label_complaints">The 3 Complaints</label>
+                        <div class="question-desc" data-i18n="desc_complaints">What do you complain about most?</div>
+                        <textarea rows="4" data-save="complaints"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label data-i18n="label_truth">The Unbearable Truth</label>
+                        <div class="question-desc" data-i18n="desc_truth">What truth would be unbearable to admit to
+                            someone you respect?</div>
+                        <textarea rows="2" data-save="unbearable_truth"></textarea>
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="secondary" onclick="prevStep()" data-i18n="btn_back">Back</button>
+                        <button onclick="nextStep()" data-i18n="btn_next">Next</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-container" data-step="2">
+                <div class="card">
+                    <h2 data-i18n="part1_antivision_title">Part 1: The Anti-Vision</h2>
+
+                    <div class="form-group">
+                        <label data-i18n="label_5yr">5 Years of Nothing Changing</label>
+                        <div class="question-desc" data-i18n="desc_5yr">Describe an average Tuesday in 5 years if
+                            nothing changes.</div>
+                        <textarea rows="4" data-save="antivision_5yr"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label data-i18n="label_cost">The Cost of Identity</label>
+                        <div class="question-desc" data-i18n="desc_cost">What is the most embarrassing reason you
+                            haven't changed?</div>
+                        <textarea rows="3" data-save="embarrassing_reason"></textarea>
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="secondary" onclick="prevStep()" data-i18n="btn_back">Back</button>
+                        <button onclick="nextStep()" data-i18n="btn_next">Next</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-container" data-step="3">
+                <div class="card">
+                    <h2 data-i18n="part1_vision_title">Part 1: The Vision</h2>
+
+                    <div class="form-group">
+                        <label data-i18n="label_dream">The Dream (3 Years)</label>
+                        <div class="question-desc" data-i18n="desc_dream">Snap your fingers. What does an average
+                            Tuesday look like in 3 years?</div>
+                        <textarea rows="4" data-save="vision_3yr"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label data-i18n="label_identity">Identity Shift</label>
+                        <input type="text" data-save="identity_statement" placeholder="I am the type of person who...">
+                    </div>
+
+                    <div class="form-group">
+                        <label data-i18n="label_action">Immediate Action</label>
+                        <div class="question-desc" data-i18n="desc_action">What is one thing you would do THIS WEEK if
+                            you were already that person?</div>
+                        <input type="text" data-save="immediate_action">
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="secondary" onclick="prevStep()" data-i18n="btn_back">Back</button>
+                        <button onclick="nextStep()" data-i18n="btn_begin_day">Begin The Day</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DAY: The Interrupt -->
+            <div class="step-container" data-step="4">
+                <div class="card">
+                    <h2 data-i18n="part2_title">Part 2: The Pattern Interrupt</h2>
+                    <p data-i18n="part2_desc">Set alarms on your phone to ask yourself these questions.</p>
+
+                    <div style="color: #ccc;">
+                        <div class="time-block">
+                            <strong>11:00 AM</strong><br>
+                            <span data-i18n="prompt_11am">What am I avoiding right now by doing what I’m doing?</span>
+                        </div>
+                        <div class="time-block">
+                            <strong>1:30 PM</strong><br>
+                            <span data-i18n="prompt_130pm">If someone filmed the last two hours, what would they
+                                conclude I want from my life?</span>
+                        </div>
+                        <div class="time-block">
+                            <strong>3:15 PM</strong><br>
+                            <span data-i18n="prompt_315pm">Am I moving toward the life I hate or the life I want?</span>
+                        </div>
+                        <div class="time-block">
+                            <strong>7:30 PM</strong><br>
+                            <span data-i18n="prompt_730pm">What did I do today out of identity protection rather than
+                                genuine desire?</span>
+                        </div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="secondary" onclick="prevStep()" data-i18n="btn_back">Back</button>
+                        <button onclick="nextStep()" data-i18n="btn_to_evening">Proceed to Evening Protocol</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EVENING: Synthesis -->
+            <div class="step-container" data-step="5">
+                <div class="card">
+                    <h2 data-i18n="part3_title">Part 3: Synthesis</h2>
+                    <p data-i18n="part3_desc">Integrate what you learned today.</p>
+
+                    <div class="form-group">
+                        <label data-i18n="label_enemy">The Enemy</label>
+                        <div class="question-desc" data-i18n="desc_enemy">What is the actual internal pattern or belief
+                            that has been running the show?</div>
+                        <input type="text" data-save="the_enemy">
+                    </div>
+
+                    <div class="form-group">
+                        <label data-i18n="label_av_sent">The Anti-Vision (Compressed)</label>
+                        <div class="question-desc" data-i18n="desc_av_sent">A single sentence capturing what you refuse
+                            to let your life become.</div>
+                        <input type="text" data-save="antivision_sentence">
+                    </div>
+
+                    <div class="form-group">
+                        <label data-i18n="label_v_sent">The Vision (MVP)</label>
+                        <div class="question-desc" data-i18n="desc_v_sent">A single sentence capturing what you are
+                            building toward.</div>
+                        <input type="text" data-save="vision_sentence">
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="secondary" onclick="prevStep()" data-i18n="btn_back">Back</button>
+                        <button onclick="nextStep()" data-i18n="btn_next_game">Next: Gamification</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GAMIFICATION LAYOUT -->
+            <div class="step-container" data-step="6">
+                <div class="card">
+                    <h2 data-i18n="game_title">Part 3: Turn Life Into a Game</h2>
+
+                    <div class="form-group">
+                        <label data-i18n="label_mission">The Mission (1 Year Goal)</label>
+                        <div class="question-desc" data-i18n="desc_mission">What is your sole priority? How do you win
+                            this year?</div>
+                        <input type="text" data-save="goal_1yr">
+                    </div>
+
+                    <div class="form-group">
+                        <label data-i18n="label_boss">The Boss Fight (1 Month Project)</label>
+                        <div class="question-desc" data-i18n="desc_boss">What skill to learn? What to build?</div>
+                        <input type="text" data-save="project_1mo">
+                    </div>
+
+                    <div class="form-group">
+                        <label data-i18n="label_quests">Quests (Daily Levers)</label>
+                        <div class="question-desc" data-i18n="desc_quests">What are the 2-3 priority tasks you do daily?
+                        </div>
+                        <textarea rows="3" data-save="daily_levers"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label data-i18n="label_rules">Rules (Constraints)</label>
+                        <div class="question-desc" data-i18n="desc_rules">What are you NOT willing to sacrifice?</div>
+                        <textarea rows="3" data-save="constraints"></textarea>
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="secondary" onclick="prevStep()" data-i18n="btn_back">Back</button>
+                        <button onclick="finish()" data-i18n="btn_finish">Generate Final Plan</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FINAL DASHBOARD -->
+            <div class="step-container" data-step="7">
+                <div class="card" style="border-color: var(--accent);">
+                    <h2 style="text-align: center; margin-bottom: 2rem;" data-i18n="final_title">Your Life Protocol</h2>
+
+                    <div class="dashboard-grid">
+                        <div class="stat-box full-width">
+                            <div class="stat-label" data-i18n="stat_identity">Identity Statement</div>
+                            <div class="stat-value" id="disp_identity"
+                                style="font-size: 1.2rem; font-weight: bold; color: white;"></div>
+                        </div>
+
+                        <div class="stat-box">
+                            <div class="stat-label" style="color: #ef4444;" data-i18n="stat_antivision">The Anti-Vision
+                            </div>
+                            <div class="stat-value" id="disp_antivision"></div>
+                        </div>
+
+                        <div class="stat-box">
+                            <div class="stat-label" style="color: #22c55e;" data-i18n="stat_vision">The Vision</div>
+                            <div class="stat-value" id="disp_vision"></div>
+                        </div>
+
+                        <div class="stat-box full-width" style="border-left-color: #a855f7;">
+                            <div class="stat-label" data-i18n="stat_mission">The Mission (1 Year)</div>
+                            <div class="stat-value" id="disp_mission"></div>
+                        </div>
+
+                        <div class="stat-box" style="border-left-color: #f59e0b;">
+                            <div class="stat-label" data-i18n="stat_boss">Boss Fight (1 Month)</div>
+                            <div class="stat-value" id="disp_boss"></div>
+                        </div>
+
+                        <div class="stat-box" style="border-left-color: #ec4899;">
+                            <div class="stat-label" data-i18n="stat_quests">Daily Quests</div>
+                            <div class="stat-value" id="disp_quests"></div>
+                        </div>
+
+                        <div class="stat-box full-width" style="border-left-color: #6366f1;">
+                            <div class="stat-label" data-i18n="stat_rules">The Rules (Non-Negotiables)</div>
+                            <div class="stat-value" id="disp_rules"></div>
+                        </div>
+                    </div>
+
+                    <div class="export-actions">
+                        <button onclick="shareOnX()" style="background-color: #000; border: 1px solid #333; flex: 1.5;">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"
+                                style="width: 20px; height: 20px; vertical-align: middle; fill: white; margin-right: 8px;">
+                                <g>
+                                    <path
+                                        d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z">
+                                    </path>
+                                </g>
+                            </svg>
+                            <span data-i18n="btn_share">Share Progress</span>
+                        </button>
+                    </div>
+
+                    <div class="export-actions" style="margin-top: 1rem;">
+                        <button onclick="downloadPlan()" class="secondary" data-i18n="btn_download">Download
+                            Protocol</button>
+                        <button class="secondary" onclick="step = 0; updateUI();" data-i18n="btn_edit">Edit
+                            Plan</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="profile-card">
+            <img src="minli_avatar.png" alt="MinLi">
+            <div class="profile-info">
+                <div class="profile-name">MinLiBuilds</div>
+                <a href="https://x.com/MinLiBuilds" target="_blank" class="profile-link">@MinLiBuilds</a>
+                <div class="profile-cta" data-i18n="follow_cta">Follow for AI & Life Hacking</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let step = 0;
+        const totalSteps = 7;
+        let currentLang = localStorage.getItem('fix_life_lang') || 'en';
+
+        // Translation Dictionary
+        const i18n = {
+            en: {
+                main_title: "The Protocol",
+                main_subtitle: "How to fix your entire life in 1 day",
+                welcome_title: "Welcome",
+                welcome_p1: "This tool guides you through to reset your life. It is designed to be done over the course of <strong>one full day</strong>.",
+                welcome_quote: "\"You aren’t where you want to be because you aren’t the person who would be there.\"",
+                welcome_quote: "\"You aren’t where you want to be because you aren’t the person who would be there.\"",
+                welcome_note: "🔒 Privacy: No data is sent to any server. Everything is stored locally in your browser.",
+                source_link: "Original Protocol by Dan Koe",
+                btn_start: "Start Protocol",
+                part1_title: "Part 1: The Excavation",
+                part1_intro: "We must create a new frame for your mind. Answer truthfully.",
+                label_dissatisfaction: "Persistent Dissatisfaction",
+                desc_dissatisfaction: "What is the dull dissatisfaction you’ve learned to tolerate?",
+                label_complaints: "The 3 Complaints",
+                desc_complaints: "What do you complain about most?",
+                label_truth: "The Unbearable Truth",
+                desc_truth: "What truth would be unbearable to admit to someone you respect?",
+                btn_back: "Back",
+                btn_next: "Next",
+                part1_antivision_title: "Part 1: The Anti-Vision",
+                label_5yr: "5 Years of Nothing Changing",
+                desc_5yr: "Describe an average Tuesday in 5 years if nothing changes.",
+                label_cost: "The Cost of Identity",
+                desc_cost: "What is the most embarrassing reason you haven't changed?",
+                part1_vision_title: "Part 1: The Vision",
+                label_dream: "The Dream (3 Years)",
+                desc_dream: "Snap your fingers. What does an average Tuesday look like in 3 years?",
+                label_identity: "Identity Shift",
+                label_action: "Immediate Action",
+                desc_action: "What is one thing you would do THIS WEEK if you were already that person?",
+                btn_begin_day: "Begin The Day",
+                part2_title: "Part 2: The Pattern Interrupt",
+                part2_desc: "Set alarms on your phone to ask yourself these questions.",
+                prompt_11am: "What am I avoiding right now by doing what I’m doing?",
+                prompt_130pm: "If someone filmed the last two hours, what would they conclude I want from my life?",
+                prompt_315pm: "Am I moving toward the life I hate or the life I want?",
+                prompt_730pm: "What did I do today out of identity protection rather than genuine desire?",
+                btn_to_evening: "Proceed to Evening Protocol",
+                part3_title: "Part 3: Synthesis",
+                part3_desc: "Integrate what you learned today.",
+                label_enemy: "The Enemy",
+                desc_enemy: "What is the actual internal pattern or belief?",
+                label_av_sent: "The Anti-Vision (Compressed)",
+                desc_av_sent: "A single sentence capturing what you refuse to let your life become.",
+                label_v_sent: "The Vision (MVP)",
+                desc_v_sent: "A single sentence capturing what you are building toward.",
+                btn_next_game: "Next: Gamification",
+                game_title: "Part 3: Turn Life Into a Game",
+                label_mission: "The Mission (1 Year Goal)",
+                desc_mission: "What is your sole priority? How do you win this year?",
+                label_boss: "The Boss Fight (1 Month Project)",
+                desc_boss: "What skill to learn? What to build?",
+                label_quests: "Quests (Daily Levers)",
+                desc_quests: "What are the 2-3 priority tasks you do daily?",
+                label_rules: "Rules (Constraints)",
+                desc_rules: "What are you NOT willing to sacrifice?",
+                btn_finish: "Generate Final Plan",
+                final_title: "Your Life Protocol",
+                stat_identity: "Identity Statement",
+                stat_antivision: "The Anti-Vision",
+                stat_vision: "The Vision",
+                stat_mission: "The Mission (1 Year)",
+                stat_boss: "Boss Fight (1 Month)",
+                stat_quests: "Daily Quests",
+                stat_rules: "The Rules (Non-Negotiables)",
+                btn_download: "Download .txt",
+                btn_edit: "Edit",
+                btn_share: "Share on X",
+                follow_cta: "Follow for AI & Life Hacking"
+            },
+            zh: {
+                main_title: "人生重启协议",
+                main_subtitle: "如何在一天内彻底修正你的人生",
+                welcome_title: "欢迎",
+                welcome_p1: "本工具引导你完成人生重置协议。该过程耗时<strong>整整一天</strong>。",
+                welcome_quote: "“你没有过上想要的生活，是因为你根本不是那种能过上那种生活的人。”",
+                welcome_quote: "“你没有过上想要的生活，是因为你根本不是那种能过上那种生活的人。”",
+                welcome_note: "🔒 隐私说明：本工具纯前端运行，绝不上传任何数据。所有进度仅保存在您的本地浏览器缓存中。",
+                source_link: "原协议来自 Dan Koe (点击查看推文)",
+                btn_start: "开始协议",
+                part1_title: "第一部分：心理挖掘",
+                part1_intro: "必须为思维建立新框架。请诚实。",
+                label_dissatisfaction: "持续的不满",
+                desc_dissatisfaction: "你已经学会忍受的那种隐隐作痛的不满是什么？",
+                label_complaints: "三个抱怨",
+                desc_complaints: "你最常抱怨什么？",
+                label_truth: "难以承受的真相",
+                desc_truth: "有什么关于你现状的真相，是你不敢告诉别人的？",
+                btn_back: "上一步",
+                btn_next: "下一步",
+                part1_antivision_title: "第一部分：反面愿景",
+                label_5yr: "一成不变的五年后",
+                desc_5yr: "如果接下来5年什么都不变，一个普通的周二会是什么样？",
+                label_cost: "身份的代价",
+                desc_cost: "你一直没有改变的最尴尬的原因是什么？",
+                part1_vision_title: "第一部分：愿景",
+                label_dream: "梦想 (3年后)",
+                desc_dream: "打个响指来到3年后。一个理想的周二是什么样的？",
+                label_identity: "身份转变",
+                label_action: "立即行动",
+                desc_action: "如果你已经是那样的人，这周你会做的哪一件事？",
+                btn_begin_day: "开始这一天",
+                part2_title: "第二部分：模式打断",
+                part2_desc: "设定闹钟问自己这些问题。",
+                prompt_11am: "我现在做的事情，是为了逃避什么？",
+                prompt_130pm: "如果有人拍下了我过去两小时，他们会认为我想要什么？",
+                prompt_315pm: "我是在走向我讨厌的生活，还是我想要的生活？",
+                prompt_730pm: "我今天做的哪些事是出于“身份保护”？",
+                btn_to_evening: "进入晚间协议",
+                part3_title: "第三部分：综合整合",
+                part3_desc: "整合你今天的所思所想。",
+                label_enemy: "真正的敌人",
+                desc_enemy: "真正主宰你生活的内部模式是什么？",
+                label_av_sent: "反面愿景 (浓缩)",
+                desc_av_sent: "一句话概括你绝对拒绝让你的人生变成的样子。",
+                label_v_sent: "核心愿景 (MVP)",
+                desc_v_sent: "一句话概括你正在构建的未来。",
+                btn_next_game: "下一步：游戏化",
+                game_title: "第三部分：人生游戏化",
+                label_mission: "主线任务 (1年目标)",
+                desc_mission: "你唯一的优先级是什么？这一年怎么才算赢？",
+                label_boss: "Boss战 (1个月项目)",
+                desc_boss: "你要学什么技能？构建什么项目？",
+                label_quests: "日常任务",
+                desc_quests: "你每天必须要做的2-3件关键任务是什么？",
+                label_rules: "游戏规则",
+                desc_rules: "你绝对不愿意牺牲什么？禁止什么？",
+                btn_finish: "生成最终计划",
+                final_title: "你的人生协议",
+                stat_identity: "身份宣言",
+                stat_antivision: "反面愿景",
+                stat_vision: "核心愿景",
+                stat_mission: "主线任务 (1年)",
+                stat_boss: "Boss战 (本月重点)",
+                stat_quests: "每日任务 (Daily Quests)",
+                stat_rules: "绝对准则 (The Rules)",
+                btn_download: "下载 .txt",
+                btn_edit: "修改",
+                btn_share: "在 X 分享",
+                follow_cta: "关注我，获取更多 AI 与实战干货"
+            }
+        };
+
+        // Load data from local storage
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedStep = localStorage.getItem('fix_life_step');
+            if (savedStep) step = parseInt(savedStep);
+
+            applyLanguage(currentLang);
+            loadInputs();
+            updateUI();
+
+            // Auto-save on input
+            document.querySelectorAll('[data-save]').forEach(el => {
+                el.addEventListener('input', (e) => {
+                    localStorage.setItem('fix_life_' + e.target.dataset.save, e.target.value);
+                });
+            });
+
+            // Global Key Shortcuts
+            document.addEventListener('keydown', (e) => {
+                // Cmd+Enter or Ctrl+Enter to go next
+                if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+                    nextStep();
+                }
+                // Enter on text inputs to go next
+                if (e.target.tagName === 'INPUT' && e.target.type === 'text' && e.key === 'Enter') {
+                    e.preventDefault();
+                    nextStep();
+                }
+            });
+        });
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'zh' : 'en';
+            localStorage.setItem('fix_life_lang', currentLang);
+            applyLanguage(currentLang);
+        }
+
+        function applyLanguage(lang) {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.dataset.i18n;
+                if (i18n[lang][key]) {
+                    if (el.tagName === 'INPUT' && el.type === 'text') {
+                        // special case
+                    } else {
+                        el.innerHTML = i18n[lang][key];
+                    }
+                }
+            });
+
+            // Placeholder
+            const identityInput = document.querySelector('[data-save="identity_statement"]');
+            if (lang === 'zh') identityInput.placeholder = "我是那种......的人";
+            else identityInput.placeholder = "I am the type of person who...";
+        }
+
+        function loadInputs() {
+            document.querySelectorAll('[data-save]').forEach(el => {
+                const saved = localStorage.getItem('fix_life_' + el.dataset.save);
+                if (saved) el.value = saved;
+            });
+        }
+
+        function updateUI() {
+            document.querySelectorAll('.step-container').forEach(el => el.classList.remove('active'));
+            const current = document.querySelector(`.step-container[data-step="${step}"]`);
+            if (current) {
+                current.classList.add('active');
+                // Auto-focus first input
+                setTimeout(() => {
+                    const firstInput = current.querySelector('input, textarea');
+                    if (firstInput) firstInput.focus();
+                }, 100);
+            }
+
+            // Progress bar
+            const progress = (step / totalSteps) * 100;
+            document.getElementById('progress').style.width = `${progress}%`;
+
+            localStorage.setItem('fix_life_step', step);
+            window.scrollTo(0, 0);
+        }
+
+        function nextStep() {
+            if (step < totalSteps) {
+                step++;
+                updateUI();
+                if (step === 7) renderDashboard();
+            }
+        }
+
+        function prevStep() {
+            if (step > 0) {
+                step--;
+                updateUI();
+            }
+        }
+
+        function finish() {
+            step = 7;
+            updateUI();
+            renderDashboard();
+        }
+
+        function getVal(key) {
+            return localStorage.getItem('fix_life_' + key) || '';
+        }
+
+        function renderDashboard() {
+            document.getElementById('disp_identity').innerText = getVal('identity_statement');
+            document.getElementById('disp_antivision').innerText = getVal('antivision_sentence');
+            document.getElementById('disp_vision').innerText = getVal('vision_sentence');
+            document.getElementById('disp_mission').innerText = getVal('goal_1yr');
+            document.getElementById('disp_boss').innerText = getVal('project_1mo');
+            document.getElementById('disp_quests').innerText = getVal('daily_levers');
+            document.getElementById('disp_rules').innerText = getVal('constraints');
+        }
+
+        function downloadPlan() {
+            // Simple download logic
+            const content = `THE PROTOCOL
+
+--- IDENTITY ---
+${getVal('identity_statement')}
+
+--- DIRECTION ---
+ANTI-VISION: ${getVal('antivision_sentence')}
+VISION:      ${getVal('vision_sentence')}
+
+--- MISSION ---
+1 YEAR GOAL: ${getVal('goal_1yr')}
+THIS MONTH:  ${getVal('project_1mo')}
+
+--- DAILY EXECUTION ---
+DAILY QUESTS:
+${getVal('daily_levers')}
+
+THE RULES:
+${getVal('constraints')}
+
+--- DEEP DIVE ---
+DISSATISFACTION: ${getVal('dissatisfaction')}
+COMPLAINTS: ${getVal('complaints')}
+UNBEARABLE TRUTH: ${getVal('unbearable_truth')}
+5 YEAR HELL: ${getVal('antivision_5yr')}
+COST: ${getVal('embarrassing_reason')}
+3 YEAR HEAVEN: ${getVal('vision_3yr')}
+IMMEDIATE ACTION: ${getVal('immediate_action')}
+THE ENEMY: ${getVal('the_enemy')}`;
+            const blob = new Blob([content], { type: 'text/plain' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'My_Life_Protocol.txt';
+            a.click();
+        }
+
+        function shareOnX() {
+            const text = encodeURIComponent("I just built my Life Protocol using this tool by @MinLiBuilds.\n\nIdentity Shift: " + getVal('identity_statement') + "\n\nTry it yourself:");
+            const url = encodeURIComponent(window.location.href);
+            window.open(`https://x.com/intent/tweet?text=${text}&url=${url}`, '_blank');
+        }
+    </script>
+
+</body>
+
+</html>
